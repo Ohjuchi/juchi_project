@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import MyButton from "./MyButton";
+import React from "react";
 
 const DiaryItem = ({ id, emotion, content, date }) => {
   const navigate = useNavigate();
@@ -34,5 +35,8 @@ const DiaryItem = ({ id, emotion, content, date }) => {
     </div>
   );
 };
+//위에 리턴이 너무기니까 아래에 리엑트메모 적용시킬거임
+//여기 최적하는 이유 : 이미지가 포함되어있어서 리렌더링되면 대단히 위험
+// 컨트롤 메뉴(리스트순서정하는 셀렉트박스)를 선택해도 이거 리랜더링 안되도되는데 되어버려서
 
-export default DiaryItem;
+export default React.memo(DiaryItem);

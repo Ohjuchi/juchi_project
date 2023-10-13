@@ -1,4 +1,4 @@
-import React, { useReducer, useRef } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -19,7 +19,7 @@ const reducer = (state, action) => {
       return action.data;
     }
     case "CREATE": {
-      newState = [...action.data, ...state];
+      newState = [{ ...action.data }, ...state];
       break;
     }
     case "REMOVE": {
@@ -35,6 +35,8 @@ const reducer = (state, action) => {
     default:
       return state;
   }
+
+  localStorage.setItem("diary", JSON.stringify(newState));
   return newState;
 };
 // 상태 공급하는 context
@@ -42,57 +44,36 @@ export const DiaryStateContext = React.createContext();
 // 함수 공급하는 context
 export const DiaryDispatchContext = React.createContext();
 
-const dummyData = [
-  {
-    id: 1,
-    emotion: 1,
-    content: "일기 1번임",
-    date: 1696116364311,
-  },
-  {
-    id: 2,
-    emotion: 2,
-    content: "일기 2번임",
-    date: 1696216364322,
-  },
-  {
-    id: 3,
-    emotion: 3,
-    content: "일기 3번임",
-    date: 1696316364333,
-  },
-  {
-    id: 4,
-    emotion: 4,
-    content: "일기 4번임",
-    date: 1697926364344,
-  },
-  {
-    id: 5,
-    emotion: 5,
-    content: "일기 5번임",
-    date: 1696116364300,
-  },
-  {
-    id: 6,
-    emotion: 6,
-    content: "일기 6번임",
-    date: 1706916364373,
-  },
-];
-
 function App() {
-  const [data, dispatch] = useReducer(reducer, dummyData);
+  const [data, dispatch] = useReducer(reducer, []);
   //  console.log(new Date().getTime());
 
-  const dataId = useRef(0);
+  useEffect(() => {
+    const localData = localStorage.getItem("diary");
+    // 아래 로직설명 (일기쓸때마다 key가 겹칠수가있음 해결하기위해)
+    // localData 가 있을때 수행
+    // 로컬데이터를 재정렬해서 id값이 제일 높은걸 앞으로 오게하고
+    // 제일높은 id값을 가져와서 id값을 스테이트에 적용시킴
+    if (localData) {
+      const diaryList = JSON.parse(localData).sort(
+        (a, b) => parseInt(b.id) - parseInt(a.id)
+      );
+
+      if (diaryList.length >= 1) {
+        dataId.current = parseInt(diaryList[0].id) + 1;
+        dispatch({ type: "INIT", data: diaryList });
+      }
+    }
+  }, []);
+
+  const dataId = useRef(6);
   // CREATE
   const onCreate = (date, content, emotion) => {
     dispatch({
       type: "CREATE",
       data: {
         id: dataId.current,
-        data: new Date(data).getTime(),
+        date: new Date(date).getTime(),
         content,
         emotion,
       },

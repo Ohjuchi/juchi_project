@@ -12,6 +12,10 @@ const Home = () => {
   const [curDate, setCurDate] = useState(new Date());
   const headText = `${curDate.getFullYear()}년 ${curDate.getMonth() + 1}월`;
 
+  useEffect(() => {
+    const titleElement = document.getElementsByTagName("title")[0];
+    titleElement.innerHTML = `일기장  - 목록`;
+  }, []);
   //
   useEffect(() => {
     if (diaryList.length >= 1) {
@@ -21,10 +25,16 @@ const Home = () => {
         1
       ).getTime();
 
+      // 버그 드디어찾음
+      // 날짜의 시분초까지 영향을미치니까 0시 23시 59분59초 이거 해둬야함...
+      //안그러면 9월30일같은 마지막날짜는 안뜸
       const lastDay = new Date(
         curDate.getFullYear(),
         curDate.getMonth() + 1,
-        0
+        0,
+        23,
+        59,
+        59
       ).getTime();
 
       // console.log("lastDay 값 출력", new Date(lastDay));

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MyButton from "./MyButton";
 import DiaryItem from "./DiaryItem";
@@ -15,8 +15,10 @@ const filterOptionList = [
   { value: "bad", name: "뭐같은 기분만" },
 ];
 
-//셀렉트박스 구현 재활용이가능함
-const ControlMenu = ({ value, onChange, optionList }) => {
+//셀렉트박스 구현 재활용이가능함 & 최적화도 진행함
+// 근데 onChange는 안에있는 setSortType 함수인데 useCallBack 안쓴이유가 useState에서 반환받는 함수는
+// 이미 동일한 함수로 처리가 되어있어서 그렇다함 유즈콜백쓰는것과 같은효과
+const ControlMenu = React.memo(({ value, onChange, optionList }) => {
   return (
     <select
       className="ControlMenu"
@@ -30,7 +32,7 @@ const ControlMenu = ({ value, onChange, optionList }) => {
       ))}
     </select>
   );
-};
+});
 
 //옵션에 따라 배열 정렬해주는 함수
 const DiaryList = ({ diaryList }) => {
